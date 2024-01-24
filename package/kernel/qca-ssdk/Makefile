@@ -75,6 +75,9 @@ define Build/InstallDev
 	if [ -f $(PKG_BUILD_DIR)/include/init/ssdk_init.h ]; then \
 	$(CP) -rf $(PKG_BUILD_DIR)/include/init/ssdk_init.h $(1)/usr/include/qca-ssdk/init/; \
 	fi
+	if [ -f $(PKG_BUILD_DIR)/include/init/ssdk_netlink.h ]; then \
+	$(CP) -rf $(PKG_BUILD_DIR)/include/init/ssdk_netlink.h $(1)/usr/include/qca-ssdk/init/; \
+	fi
 	$(CP) -rf $(PKG_BUILD_DIR)/include/fal $(1)/usr/include/qca-ssdk
 	$(CP) -rf $(PKG_BUILD_DIR)/include/common/*.h $(1)/usr/include/qca-ssdk
 	$(CP) -rf $(PKG_BUILD_DIR)/include/sal/os/linux/*.h $(1)/usr/include/qca-ssdk
