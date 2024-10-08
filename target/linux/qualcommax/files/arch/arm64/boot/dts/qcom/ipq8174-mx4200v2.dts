@@ -15,3 +15,15 @@
 
 	qcom,ath11k-calibration-variant = "Linksys-MX4200v2";
 };
+
+/ { 
+	reserved-memory {
+		ramoops_region: ramoops@51100000 {
+			compatible = "ramoops";
+			reg = <0x0 0x51100000 0x0 0x100000>;
+			no-map;
+			record-size = <0x10000>;
+			console-size = <0x10000>;
+		};
+	};
+};
