@@ -622,6 +622,31 @@ endef
 $(eval $(call KernelPackage,mtdoops))
 
 
+define KernelPackage/mtdpstore
+  SUBMENU:=$(OTHER_MENU)
+  TITLE:=Log panic/oops to an MTD buffer based on pstore
+  KCONFIG:=CONFIG_MTD_PSTORE \
+  CONFIG_IO_STRICT_DEVMEM=n \
+  CONFIG_PSTORE_ZONE \
+  CONFIG_PSTORE_BLK \
+  CONFIG_PSTORE_BLK_BLKDEV="pstore" \
+  CONFIG_PSTORE_BLK_KMSG_SIZE=64 \
+  CONFIG_PSTORE_BLK_MAX_REASON=2
+  DEPENDS:=+kmod-pstore
+  FILES:=\
+  $(LINUX_DIR)/drivers/mtd/mtdpstore.ko \
+  $(LINUX_DIR)/fs/pstore/pstore_zone.ko \
+  $(LINUX_DIR)/fs/pstore/pstore_blk.ko
+  AUTOLOAD:=$(call AutoLoad,30,mtdpstore,1)
+endef
+
+define KernelPackage/mtdpstore/description
+ Kernel modules for Log panic/oops to an MTD buffer based on pstore
+endef
+
+$(eval $(call KernelPackage,mtdpstore))
+
+
 define KernelPackage/mtdram
   SUBMENU:=$(OTHER_MENU)
   TITLE:=Test MTD driver using RAM

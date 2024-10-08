@@ -301,8 +301,12 @@
 			};
 			partition@13f00000 {
 				label = "syscfg";
-				reg = <0x13f00000 0xb800000>;
+				reg = <0x13f00000 0xb100000>;
 				read-only;
+			};
+			partition@1f000000 {
+				label = "pstore";
+				reg = <0x1f000000 0x700000>;
 			};
 			partition@1f700000 {
 				label = "0:wififw";
