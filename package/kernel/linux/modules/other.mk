@@ -622,6 +622,22 @@ endef
 $(eval $(call KernelPackage,mtdoops))
 
 
+define KernelPackage/mtdpstore
+  SUBMENU:=$(OTHER_MENU)
+  TITLE:=Log panic/oops to an MTD buffer based on pstore
+  KCONFIG:=CONFIG_MTD_PSTORE
+  DEPENDS:=+kmod-pstore-blk
+  FILES:=$(LINUX_DIR)/drivers/mtd/mtdpstore.ko
+  AUTOLOAD:=$(call AutoLoad,30,mtdpstore,1)
+endef
+
+define KernelPackage/mtdpstore/description
+ Kernel modules for Log panic/oops to an MTD buffer based on pstore
+endef
+
+$(eval $(call KernelPackage,mtdpstore))
+
+
 define KernelPackage/mtdram
   SUBMENU:=$(OTHER_MENU)
   TITLE:=Test MTD driver using RAM
@@ -961,6 +977,7 @@ define KernelPackage/thermal
 	CONFIG_THERMAL=y \
 	CONFIG_THERMAL_OF=y \
 	CONFIG_CPU_THERMAL=y \
+	CONFIG_DEVFREQ_THERMAL=n \
 	CONFIG_THERMAL_DEFAULT_GOV_STEP_WISE=y \
 	CONFIG_THERMAL_DEFAULT_GOV_FAIR_SHARE=n \
 	CONFIG_THERMAL_DEFAULT_GOV_USER_SPACE=n \
