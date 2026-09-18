@@ -1,0 +1,41 @@
+From 226f32543668960673596288a50191052dba3352 Mon Sep 17 00:00:00 2001
+From: Manuel Fombuena <fombuena@outlook.com>
+Date: Tue, 15 Sep 2026 13:42:15 +0100
+Subject: [PATCH 01/13] leds: st1202: Correct the name of the prescaler
+ conversion helper
+
+st1202_prescalar_to_miliseconds() converts a duration in milliseconds
+into the prescaler value written to the pattern duration registers, so
+its name states the conversion the wrong way round. It also misspells
+both "prescaler" and "milliseconds".
+
+Rename it to st1202_milliseconds_to_prescaler(). No functional change.
+
+Signed-off-by: Manuel Fombuena <fombuena@outlook.com>
+Assisted-by: LLM
+Link: https://patch.msgid.link/GV1PR08MB8497AA602374777F1BA08E07C5BA2@GV1PR08MB8497.eurprd08.prod.outlook.com
+Signed-off-by: Lee Jones <lee@kernel.org>
+---
+ drivers/leds/leds-st1202.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+--- a/drivers/leds/leds-st1202.c
++++ b/drivers/leds/leds-st1202.c
+@@ -85,7 +85,7 @@ static int st1202_write_reg(struct st120
+ 	return ret;
+ }
+ 
+-static uint8_t st1202_prescalar_to_miliseconds(unsigned int value)
++static uint8_t st1202_milliseconds_to_prescaler(unsigned int value)
+ {
+ 	return value / ST1202_MILLIS_PATTERN_DUR_MIN;
+ }
+@@ -126,7 +126,7 @@ static int st1202_duration_pattern_write
+ 					unsigned int value)
+ {
+ 	return st1202_write_reg(chip, (ST1202_PATTERN_DUR + pattern),
+-				st1202_prescalar_to_miliseconds(value));
++				st1202_milliseconds_to_prescaler(value));
+ }
+ 
+ static int __st1202_channel_set(struct st1202_chip *chip, int led_num, bool active)

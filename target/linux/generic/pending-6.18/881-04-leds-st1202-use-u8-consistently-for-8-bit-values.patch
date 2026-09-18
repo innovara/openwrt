@@ -1,0 +1,56 @@
+From 38f98583bcac95a65774b73cbcc56280a71f5612 Mon Sep 17 00:00:00 2001
+From: Manuel Fombuena <fombuena@outlook.com>
+Date: Tue, 15 Sep 2026 13:43:58 +0100
+Subject: [PATCH 04/13] leds: st1202: Use u8 consistently for 8-bit values
+
+The driver spells 8-bit unsigned values both as uint8_t and as u8, a
+mix present since the driver was added. The register helpers and the
+prescaler conversion use uint8_t, while the rest of the driver uses u8,
+which is also the preferred type in kernel code.
+
+Convert the remaining uint8_t uses to u8.
+
+No functional change.
+
+Signed-off-by: Manuel Fombuena <fombuena@outlook.com>
+Assisted-by: LLM
+Link: https://patch.msgid.link/GV1PR08MB8497783FB573CD48491F9648C5BA2@GV1PR08MB8497.eurprd08.prod.outlook.com
+Signed-off-by: Lee Jones <lee@kernel.org>
+---
+ drivers/leds/leds-st1202.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+--- a/drivers/leds/leds-st1202.c
++++ b/drivers/leds/leds-st1202.c
+@@ -59,7 +59,7 @@ static struct st1202_led *cdev_to_st1202
+ 	return container_of(cdev, struct st1202_led, led_cdev);
+ }
+ 
+-static int st1202_read_reg(struct st1202_chip *chip, int reg, uint8_t *val)
++static int st1202_read_reg(struct st1202_chip *chip, int reg, u8 *val)
+ {
+ 	struct device *dev = &chip->client->dev;
+ 	int ret;
+@@ -70,11 +70,11 @@ static int st1202_read_reg(struct st1202
+ 		return ret;
+ 	}
+ 
+-	*val = (uint8_t)ret;
++	*val = (u8)ret;
+ 	return 0;
+ }
+ 
+-static int st1202_write_reg(struct st1202_chip *chip, int reg, uint8_t val)
++static int st1202_write_reg(struct st1202_chip *chip, int reg, u8 val)
+ {
+ 	struct device *dev = &chip->client->dev;
+ 	int ret;
+@@ -86,7 +86,7 @@ static int st1202_write_reg(struct st120
+ 	return ret;
+ }
+ 
+-static uint8_t st1202_milliseconds_to_prescaler(unsigned int value)
++static u8 st1202_milliseconds_to_prescaler(unsigned int value)
+ {
+ 	return value / ST1202_MILLIS_PATTERN_DUR_MIN;
+ }
