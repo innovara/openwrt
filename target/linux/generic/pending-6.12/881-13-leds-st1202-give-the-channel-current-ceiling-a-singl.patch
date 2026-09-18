@@ -1,0 +1,68 @@
+From e264a106d8fc45fd82891cb0c4f8bd9e2c48c152 Mon Sep 17 00:00:00 2001
+From: Manuel Fombuena <fombuena@outlook.com>
+Date: Tue, 15 Sep 2026 13:48:51 +0100
+Subject: [PATCH 13/13] leds: st1202: Give the channel current ceiling a single
+ helper
+
+The channel current register is 8 bits wide, while max_brightness comes
+from the device tree and can be larger. The brightness, pattern and
+blink paths each apply that limit on their own, open-coding the same
+min_t() against U8_MAX, and the blink path previously drifted from the
+others by ignoring max_brightness altogether.
+
+Move the limit into st1202_iled_max() and use it in all three places.
+Each path programs the same value as before: the LED core already limits
+brightness to max_brightness, so capping it against st1202_iled_max() in
+st1202_led_set() gives the same result as capping it against U8_MAX.
+
+Signed-off-by: Manuel Fombuena <fombuena@outlook.com>
+Assisted-by: LLM
+Link: https://patch.msgid.link/GV1PR08MB8497935DA426302FB808A81EC5BA2@GV1PR08MB8497.eurprd08.prod.outlook.com
+Signed-off-by: Lee Jones <lee@kernel.org>
+---
+ drivers/leds/leds-st1202.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
+
+--- a/drivers/leds/leds-st1202.c
++++ b/drivers/leds/leds-st1202.c
+@@ -92,6 +92,12 @@ static u8 st1202_milliseconds_to_prescal
+ 	return value / ST1202_MILLIS_PATTERN_DUR_MIN;
+ }
+ 
++/* The channel current register is 8 bits wide, whatever max-brightness says */
++static u8 st1202_iled_max(struct led_classdev *led_cdev)
++{
++	return min_t(unsigned int, led_cdev->max_brightness, U8_MAX);
++}
++
+ static u16 st1202_brightness_to_pwm(int brightness, unsigned int max_brightness)
+ {
+ 	if (!max_brightness)
+@@ -208,7 +214,7 @@ static int st1202_led_set(struct led_cla
+ 	}
+ 
+ 	ret = st1202_write_reg(chip, ST1202_ILED_REG0 + led->led_num,
+-				min_t(unsigned int, value, U8_MAX));
++				min_t(unsigned int, value, st1202_iled_max(ldev)));
+ 	if (ret)
+ 		return ret;
+ 
+@@ -258,7 +264,7 @@ static int st1202_led_pattern_set(struct
+ 	unsigned int max_brightness;
+ 	int ret;
+ 
+-	max_brightness = min_t(unsigned int, ldev->max_brightness, U8_MAX);
++	max_brightness = st1202_iled_max(ldev);
+ 
+ 	if (len > ST1202_MAX_PATTERNS)
+ 		return -EINVAL;
+@@ -383,8 +389,7 @@ static int st1202_blink_set(struct led_c
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = st1202_write_reg(chip, ST1202_ILED_REG0 + led->led_num,
+-				min_t(unsigned int, led_cdev->max_brightness, U8_MAX));
++	ret = st1202_write_reg(chip, ST1202_ILED_REG0 + led->led_num, st1202_iled_max(led_cdev));
+ 	if (ret)
+ 		return ret;
+ 
